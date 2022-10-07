@@ -153,6 +153,50 @@ public class WebSocketPublisher: NSObject {
 }
 
 // MARK: - Publishers.WSPublisher: URLSessionWebSocketDelegate
+// MARK: - WebSocketPublisher Async/Await
+
+extension WebSocketPublisher {
+    /// Private async encapsulation for sending a `URLSessionWebSocketTask.Message` to the connected
+    /// WebSocket server/host.
+    ///
+    /// - Parameter message: The `URLSessionWebSocketTask.Message` to send.
+    /// - Throws: `WSErrors.noActiveConnection` if there isn't an active connection, or can fail if an
+    /// error occurs while sending.
+    /// - Returns: `Void`, signalling the message has been sent.
+    private func send(_ message: URLSessionWebSocketTask.Message) async throws {
+        let task = try confirmConnection()
+        
+        return try await task.send(message)
+    }
+    
+    /// Sends a `String` message to the connected WebSocket server/host.
+    /// - Parameter message: The `String` message to send.
+    /// - Throws: `WSErrors.noActiveConnection` if there isn't an active connection, or can fail if an
+    /// error occurs while sending.
+    /// - Returns: `Void`, signalling the message has been sent.
+    public func send(_ message: String) async throws {
+        return try await send(.string(message))
+    }
+    
+    /// Sends a `Data` message to the connected WebSocket server/host.
+    /// - Parameter message: The `Data` message to send.
+    /// - Throws: `WSErrors.noActiveConnection` if there isn't an active connection, or can fail if an
+    /// error occurs while sending.
+    /// - Returns: `Void`, signalling the message has been sent.
+    public func send(_ message: Data) async throws {
+        return try await send(.data(message))
+    }
+    
+    /// Sends a ping to the connected WebSocket server/host.
+    /// - Throws: `WSErrors.noActiveConnection` if there isn't an active connection, or can fail if an
+    /// error occurs while sending.
+    /// - Returns: `Void`, signalling the ping has been sent.
+    public func ping() async throws {
+        let task = try confirmConnection()
+        return try await task.sendPing()
+    }
+}
+
 
 extension WebSocketPublisher: URLSessionWebSocketDelegate {
     /// This function is called automatically by the delegate system when the WebSocket connection
