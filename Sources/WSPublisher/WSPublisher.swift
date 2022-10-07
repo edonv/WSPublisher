@@ -9,6 +9,7 @@ import Foundation
 import Combine
 
 /// Wraps around a subscribable `Publisher` for connection over WebSocket.
+@MainActor
 public class WebSocketPublisher: NSObject {
     /// The `URLRequest` used for creating an `URLSession` to start a connection.
     public var urlRequest: URLRequest? = nil
