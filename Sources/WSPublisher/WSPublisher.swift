@@ -152,7 +152,6 @@ public class WebSocketPublisher: NSObject {
     }
 }
 
-// MARK: - Publishers.WSPublisher: URLSessionWebSocketDelegate
 // MARK: - WebSocketPublisher Async/Await
 
 extension WebSocketPublisher {
@@ -197,6 +196,7 @@ extension WebSocketPublisher {
     }
 }
 
+// MARK: - WebSocketPublisher: URLSessionWebSocketDelegate
 
 extension WebSocketPublisher: URLSessionWebSocketDelegate {
     /// This function is called automatically by the delegate system when the WebSocket connection
