@@ -63,7 +63,7 @@ public class WebSocketPublisher: NSObject {
         // No need to add a gaurd statement, because if one isn't active, webSocketTask will be nil.
         // If it's nil, calling cancel(with:reason:) using optional chaining will do nothing.
         webSocketTask?.cancel(with: closeCode ?? .normalClosure,
-                             reason: (reason ?? "Closing connection").data(using: .utf8))
+                              reason: (reason ?? "Closing connection").data(using: .utf8))
         clearTaskData()
     }
     
