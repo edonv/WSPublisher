@@ -249,3 +249,36 @@ extension URLSessionWebSocketTask {
         }
     }
 }
+
+// MARK: - URLSessionWebSocketTask Async/Await
+
+extension URLSessionWebSocketTask {
+    /// Wraps `URLSessionWebSocketTask.send(_:completionHandler:)` in an async function.
+    /// - Parameter message: The `URLSessionWebSocketTask.Message` to send.
+    /// - Throws: Fails if an error occurs while sending.
+    public func send(_ message: Message) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            self.sendPing { error in
+                if let err = error {
+                    continuation.resume(throwing: err)
+                } else {
+                    continuation.resume(returning: ())
+                }
+            }
+        }
+    }
+    
+    /// Wraps `URLSessionWebSocketTask.sendPing(pongReceiveHandler:)` in an async function.
+    /// - Throws: Fails if an error occurs while sending.
+    public func sendPing() async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            self.sendPing { error in
+                if let err = error {
+                    continuation.resume(throwing: err)
+                } else {
+                    continuation.resume(returning: ())
+                }
+            }
+        }
+    }
+}
