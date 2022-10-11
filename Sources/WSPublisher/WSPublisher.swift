@@ -165,7 +165,7 @@ extension WebSocketPublisher {
     private func send(_ message: URLSessionWebSocketTask.Message) async throws {
         let task = try confirmConnection()
         
-        return try await task.send(message)
+        try await task.send(message)
     }
     
     /// Sends a `String` message to the connected WebSocket server/host.
@@ -174,7 +174,7 @@ extension WebSocketPublisher {
     /// error occurs while sending.
     /// - Returns: `Void`, signalling the message has been sent.
     public func send(_ message: String) async throws {
-        return try await send(.string(message))
+        try await send(.string(message))
     }
     
     /// Sends a `Data` message to the connected WebSocket server/host.
@@ -183,7 +183,7 @@ extension WebSocketPublisher {
     /// error occurs while sending.
     /// - Returns: `Void`, signalling the message has been sent.
     public func send(_ message: Data) async throws {
-        return try await send(.data(message))
+        try await send(.data(message))
     }
     
     /// Sends a ping to the connected WebSocket server/host.
