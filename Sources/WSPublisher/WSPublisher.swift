@@ -166,7 +166,6 @@ extension WebSocketPublisher {
     /// - Returns: `Void`, signalling the message has been sent.
     private func send(_ message: URLSessionWebSocketTask.Message) async throws {
         let task = try confirmConnection()
-        
         try await task.send(message)
     }
     
