@@ -8,6 +8,8 @@
 import Foundation
 import Combine
 
+// TODO: Need to allow it to work without an internet connection if it's the same device.
+
 /// Wraps around a subscribable `Publisher` for connection over WebSocket.
 public class WebSocketPublisher: NSObject {
     /// The `URLRequest` used for creating an `URLSession` to start a connection.
@@ -192,7 +194,7 @@ extension WebSocketPublisher {
     /// - Returns: `Void`, signalling the ping has been sent.
     public func ping() async throws {
         let task = try confirmConnection()
-        return try await task.sendPing()
+        try await task.sendPing()
     }
 }
 
