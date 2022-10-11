@@ -302,7 +302,7 @@ extension URLSessionWebSocketTask {
     /// - Throws: Fails if an error occurs while sending.
     public func send(_ message: Message) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            self.sendPing { error in
+            self.send(message) { error in
                 if let err = error {
                     continuation.resume(throwing: err)
                 } else {
