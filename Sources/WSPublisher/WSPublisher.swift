@@ -10,19 +10,25 @@ import Combine
 
 // TODO: Need to allow it to work without an internet connection if it's the same device.
 
-/// Wraps around a subscribable `Publisher` for connection over WebSocket.
+/// Wraps around a subscribable [Publisher](https://developer.apple.com/documentation/combine/publisher)
+/// for connection over WebSocket.
 public class WebSocketPublisher: NSObject {
     /// The `URLRequest` used for creating an `URLSession` to start a connection.
     public var urlRequest: URLRequest? = nil
     
-    /// The `URLSessionWebSocketTask` containing the active connection, when there is one.
-    private var webSocketTask: URLSessionWebSocketTask? = nil
-    /// Contains any active `Combine` `Cancellable`s.
+    /// The [URLSessionWebSocketTask](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask)
+    /// containing the active connection, when there is one.
+    public private(set) var webSocketTask: URLSessionWebSocketTask? = nil
+    
+    /// Used for storing active `Combine` [Cancellable](https://developer.apple.com/documentation/combine/cancellable)s.
     private var observers = Set<AnyCancellable>()
-    /// The `Subject` that publishes all received `WSEvent`s.
+    
+    /// The (Subject)[https://developer.apple.com/documentation/combine/subject] that publishes all received ``WebSocketPublisher/WSEvent``s.
     private let _subject = CurrentValueSubject<WSEvent, Error>(.publisherCreated)
     
-    /// Returns the internal `Publisher` (really a `CurrentValueSubject`) as an `AnyPublisher`.
+    /// Returns the internal [Publisher](https://developer.apple.com/documentation/combine/publisher) (really a
+    /// [CurrentValueSubject](https://developer.apple.com/documentation/combine/currentvaluesubject)) as an
+    /// [AnyPublisher](https://developer.apple.com/documentation/combine/anypublisher).
     /// 
     /// Maintains clear and consistent terminology, and removes the possibility of developers sending
     /// values to the subject.
@@ -57,9 +63,9 @@ public class WebSocketPublisher: NSObject {
         connect(with: URLRequest(url: url))
     }
     
-    /// Disconnects from `webSocketTask`, if there is an active connection.
+    /// Disconnects from ``WebSocketPublisher/webSocketTask``, if there is an active connection.
     /// - Parameters:
-    ///   - closeCode: `URLSessionWebSocketTask.CloseCode` representation of reason for disconnecting.
+    ///   - closeCode: [URLSessionWebSocketTask.CloseCode](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/closecode) representation of reason for disconnecting.
     ///   - reason: `String` representation of reason for disconnecting.
     public func disconnect(with closeCode: URLSessionWebSocketTask.CloseCode? = nil, reason: String? = nil) {
         // No need to add a gaurd statement, because if one isn't active, webSocketTask will be nil.
@@ -76,21 +82,21 @@ public class WebSocketPublisher: NSObject {
         observers.forEach { $0.cancel() }
     }
     
-    /// Confirms that there is an active connection.
-    /// - Throws: `WSErrors.noActiveConnection` if there isn't an active connection.
-    /// - Returns: An unwrapped optional `webSocketTask`.
+    /// Confirms that there is an active connection, unwrapping ``WebSocketPublisher/webSocketTask``.
+    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection.
+    /// - Returns: An unwrapped ``WebSocketPublisher/webSocketTask``.
     private func confirmConnection() throws -> URLSessionWebSocketTask {
         guard let task = webSocketTask else { throw WSErrors.noActiveConnection }
         return task
     }
     
-    /// Private encapsulation for sending a `URLSessionWebSocketTask.Message` to the connected
-    /// WebSocket server/host.
-    ///
-    /// The returned `Publisher` fails if there is no active connection.
-    /// - Parameter message: The `URLSessionWebSocketTask.Message` to send.
-    /// - Throws: `WSErrors.noActiveConnection` if there isn't an active connection.
-    /// - Returns: A `Publisher` without any value, signalling the message has been sent.
+    /// Private encapsulation for sending a
+    /// [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/message) to
+    /// the connected WebSocket server/host.
+    /// - Parameter message: The [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/message) to send.
+    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection.
+    /// - Returns: A [Publisher](https://developer.apple.com/documentation/combine/publisher) without any value, signalling the
+    /// message has been sent.
     private func send(_ message: URLSessionWebSocketTask.Message) throws -> AnyPublisher<Void, Error> {
         let task = try confirmConnection()
         
@@ -103,23 +109,26 @@ public class WebSocketPublisher: NSObject {
     
     /// Sends a `String` message to the connected WebSocket server/host.
     /// - Parameter message: The `String` message to send.
-    /// - Throws: `WSErrors.noActiveConnection` if there isn't an active connection.
-    /// - Returns: A `Publisher` without any value, signalling the message has been sent.
+    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection.
+    /// - Returns: A [Publisher](https://developer.apple.com/documentation/combine/publisher) without any value, signalling the
+    /// message has been sent.
     public func send(_ message: String) throws -> AnyPublisher<Void, Error> {
         return try send(.string(message))
     }
     
     /// Sends a `Data` message to the connected WebSocket server/host.
     /// - Parameter message: The `Data` message to send.
-    /// - Throws: `WSErrors.noActiveConnection` if there isn't an active connection.
-    /// - Returns: A `Publisher` without any value, signalling the message has been sent.
+    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection.
+    /// - Returns: A [Publisher](https://developer.apple.com/documentation/combine/publisher) without any value, signalling the
+    /// message has been sent.
     public func send(_ message: Data) throws -> AnyPublisher<Void, Error> {
         return try send(.data(message))
     }
     
     /// Sends a ping to the connected WebSocket server/host.
-    /// - Throws: `WSErrors.noActiveConnection` if there isn't an active connection.
-    /// - Returns: A `Publisher` without any value, signalling the message has been sent.
+    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection.
+    /// - Returns: A [Publisher](https://developer.apple.com/documentation/combine/publisher) without any value, signalling the
+    /// ping has been sent.
     public func ping() throws -> AnyPublisher<Void, Error> {
         let task = try confirmConnection()
         
@@ -129,9 +138,7 @@ public class WebSocketPublisher: NSObject {
     
     /// Starts the recursive listening loop.
     ///
-    /// Due to `URLSessionWebSocketTask` stopping its listening after receiving a single message,
-    /// the listening loop recursively calls itself upon successfully completing. If it completes
-    /// with a failure, it doesn't call itself again.
+    /// Due to [URLSessionWebSocketTask](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask) stopping its listening after receiving a single message, the listening loop recursively calls itself upon successfully completing. If it completes with a failure, it doesn't call itself again.
     private func startListening() {
         guard let task = webSocketTask else { return }
         
@@ -157,11 +164,12 @@ public class WebSocketPublisher: NSObject {
 // MARK: - WebSocketPublisher Async/Await
 
 extension WebSocketPublisher {
-    /// Private async encapsulation for sending a `URLSessionWebSocketTask.Message` to the connected
-    /// WebSocket server/host.
+    /// Private async encapsulation for sending a
+    /// [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/message) to
+    /// the connected WebSocket server/host.
     ///
-    /// - Parameter message: The `URLSessionWebSocketTask.Message` to send.
-    /// - Throws: `WSErrors.noActiveConnection` if there isn't an active connection, or can fail if an
+    /// - Parameter message: The [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/message) to send.
+    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection, or can fail if an
     /// error occurs while sending.
     /// - Returns: `Void`, signalling the message has been sent.
     private func send(_ message: URLSessionWebSocketTask.Message) async throws {
@@ -171,7 +179,7 @@ extension WebSocketPublisher {
     
     /// Sends a `String` message to the connected WebSocket server/host.
     /// - Parameter message: The `String` message to send.
-    /// - Throws: `WSErrors.noActiveConnection` if there isn't an active connection, or can fail if an
+    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection, or can fail if an
     /// error occurs while sending.
     /// - Returns: `Void`, signalling the message has been sent.
     public func send(_ message: String) async throws {
@@ -180,7 +188,7 @@ extension WebSocketPublisher {
     
     /// Sends a `Data` message to the connected WebSocket server/host.
     /// - Parameter message: The `Data` message to send.
-    /// - Throws: `WSErrors.noActiveConnection` if there isn't an active connection, or can fail if an
+    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection, or can fail if an
     /// error occurs while sending.
     /// - Returns: `Void`, signalling the message has been sent.
     public func send(_ message: Data) async throws {
@@ -188,7 +196,7 @@ extension WebSocketPublisher {
     }
     
     /// Sends a ping to the connected WebSocket server/host.
-    /// - Throws: `WSErrors.noActiveConnection` if there isn't an active connection, or can fail if an
+    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection, or can fail if an
     /// error occurs while sending.
     /// - Returns: `Void`, signalling the ping has been sent.
     public func ping() async throws {
@@ -222,9 +230,9 @@ extension WebSocketPublisher: URLSessionWebSocketDelegate {
 // MARK: - Companion Types
 
 extension WebSocketPublisher {
-    /// Events that are sent via `_subject`/`publisher`.
+    /// Events that are published via ``WebSocketPublisher/publisher``.
     public enum WSEvent {
-        /// Occurs when `_subject`/`publisher` is initially created.
+        /// Occurs when ``WebSocketPublisher/publisher`` is initially created.
         case publisherCreated
         
         /// Occurs when the connection is opened successfully.
@@ -233,18 +241,19 @@ extension WebSocketPublisher {
         /// Occurs when the connection is closed.
         case disconnected(_ closeCode: URLSessionWebSocketTask.CloseCode, _ reason: String?)
         
-        /// Occurs when `webSocketTask` receives a `Data` message.
+        /// Occurs when ``WebSocketPublisher/webSocketTask`` receives a `Data` message.
         case data(Data)
         
-        /// Occurs when `webSocketTask` receives a `String` message.
+        /// Occurs when ``WebSocketPublisher/webSocketTask`` receives a `String` message.
         case string(String)
         
-        /// This is used as a fallback, due to `URLSessionWebSocketTask.Message` being made with the
-        /// possibility of new cases.
+        /// This is used as a fallback, due to
+        /// [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/message)
+        /// being made with the possibility of new cases.
         case generic(URLSessionWebSocketTask.Message)
     }
     
-    /// Errors pertaining to `WebSocketPublisher`.
+    /// Errors pertaining to ``WebSocketPublisher``.
     public enum WSErrors: Error {
         /// Thrown when there is no active connection.
         case noActiveConnection
@@ -254,10 +263,11 @@ extension WebSocketPublisher {
 // MARK: - URLSessionWebSocketTask Combine
 
 extension URLSessionWebSocketTask {
-    /// Wraps `URLSessionWebSocketTask.send(_:completionHandler:)` in a `Future`.
-    /// - Parameter message: The `URLSessionWebSocketTask.Message` to send.
-    /// - Returns: A `Future` without any value, signalling the message has been sent.
-    /// Fails if an error occurs.
+    /// Wraps [URLSessionWebSocketTask.send(_:completionHandler:)](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/3281790-send)
+    /// in a [Future](https://developer.apple.com/documentation/combine/future).
+    /// - Parameter message: The [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/Message) to send.
+    /// - Returns: A [Future](https://developer.apple.com/documentation/combine/future) without any value, signalling
+    /// the message has been sent. Fails if an error occurs.
     public func send(_ message: Message) -> Future<Void, Error> {
         return Future { promise in
             self.send(message) { error in
@@ -270,9 +280,10 @@ extension URLSessionWebSocketTask {
         }
     }
     
-    /// Wraps `URLSessionWebSocketTask.sendPing(pongReceiveHandler:)` in a `Future`.
-    /// - Returns: A `Future` without any value, signalling the response pong had been received.
-    /// Fails if an error occurs.
+    /// Wraps [URLSessionWebSocketTask.sendPing(pongReceiveHandler:)](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/3181206-sendping)
+    /// in a [Future](https://developer.apple.com/documentation/combine/future).
+    /// - Returns: A [Future](https://developer.apple.com/documentation/combine/future) without any value, signalling
+    /// the response pong had been received. Fails if an error occurs.
     public func sendPing() -> Future<Void, Error> {
         return Future { promise in
             self.sendPing { error in
@@ -285,9 +296,11 @@ extension URLSessionWebSocketTask {
         }
     }
     
-    /// Wraps `URLSessionWebSocketTask.receive(completionHandler:)` in a `Future`.
-    /// - Returns: A `Future` containing a received `URLSessionWebSocketTask.Message`,
-    /// completing when a message has been received. Fails if an error occurs.
+    /// Wraps [URLSessionWebSocketTask.receive(completionHandler:)](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/3281789-receive)
+    /// in a [Future](https://developer.apple.com/documentation/combine/future).
+    /// - Returns: A  [Future](https://developer.apple.com/documentation/combine/future) containing a received
+    /// [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/Message),
+    /// completing when a message has been received. Fails if an error occurs while waiting to receive the next message.
     public func receiveOnce() -> Future<URLSessionWebSocketTask.Message, Error> {
         return Future { promise in
             self.receive(completionHandler: promise)
@@ -298,9 +311,11 @@ extension URLSessionWebSocketTask {
 // MARK: - URLSessionWebSocketTask Async/Await
 
 extension URLSessionWebSocketTask {
-    /// Wraps `URLSessionWebSocketTask.send(_:completionHandler:)` in an async function.
-    /// - Parameter message: The `URLSessionWebSocketTask.Message` to send.
+    /// Wraps [URLSessionWebSocketTask.send(_:completionHandler:)](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/3281790-send)
+    /// in an async function.
+    /// - Parameter message: The [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/Message) to send.
     /// - Throws: Fails if an error occurs while sending.
+    /// - Returns: `Void`, signalling the message has been sent.
     public func send(_ message: Message) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             self.send(message) { error in
@@ -313,8 +328,10 @@ extension URLSessionWebSocketTask {
         }
     }
     
-    /// Wraps `URLSessionWebSocketTask.sendPing(pongReceiveHandler:)` in an async function.
-    /// - Throws: Fails if an error occurs while sending.
+    /// Wraps [URLSessionWebSocketTask.sendPing(pongReceiveHandler:)](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/3181206-sendping)
+    /// in an async function.
+    /// - Throws: Fails if an error occurs while sending ping.
+    /// - Returns: `Void`, the response pong had been received.
     public func sendPing() async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             self.sendPing { error in
