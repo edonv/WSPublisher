@@ -343,4 +343,14 @@ extension URLSessionWebSocketTask {
             }
         }
     }
+    
+    /// Wraps [URLSessionWebSocketTask.receive(completionHandler:)](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/3281789-receive)
+    /// in an async function.
+    /// - Throws: Fails if an error occurs while waiting to receive the next message.
+    /// - Returns: A received [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/Message).
+    public func receiveOnce() async throws -> URLSessionWebSocketTask.Message {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.receive(completionHandler: continuation.resume(with:))
+        }
+    }
 }
