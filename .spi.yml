@@ -1,5 +1,4 @@
-version: 0
+version: 2
 builder:
   configs:
-    - platform: ios
-      documentation_targets: [WSPublisher]
+    - documentation_targets: [WSPublisher]
