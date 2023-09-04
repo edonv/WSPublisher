@@ -10,6 +10,8 @@ import Combine
 
 // TODO: Need to allow it to work without an internet connection if it's the same device.
 
+//https://obscuredpixels.com/awaiting-websockets-in-swiftui#
+
 /// Wraps around a subscribable [Publisher](https://developer.apple.com/documentation/combine/publisher)
 /// for connection over WebSocket.
 public class WebSocketPublisher: NSObject {
@@ -90,6 +92,18 @@ public class WebSocketPublisher: NSObject {
         return task
     }
     
+//    private var messageBuffer = [URLSessionWebSocketTask.Message]() {
+//        didSet {
+//            guard let messageToSend = messageBuffer.first else { return }
+//            // send messageToSend
+//            messageBuffer.removeFirst()
+//        }
+//    }
+//
+//    private func buffer(message: URLSessionWebSocketTask.Message) {
+//        messageBuffer.append(message)
+//    }
+    
     /// Private encapsulation for sending a
     /// [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/message) to
     /// the connected WebSocket server/host.
@@ -100,6 +114,8 @@ public class WebSocketPublisher: NSObject {
     private func send(_ message: URLSessionWebSocketTask.Message) throws -> AnyPublisher<Void, Error> {
         let task = try confirmConnection()
         
+//        buffer(message: message)
+//        Publishers.Debounce(upstream: <#T##_#>, dueTime: <#T##_.SchedulerTimeType.Stride#>, scheduler: <#T##_#>, options: <#T##_.SchedulerOptions?#>)
         return Publishers.Delay(upstream: task.send(message),
                                 interval: .seconds(1),
                                 tolerance: .seconds(0.5),
