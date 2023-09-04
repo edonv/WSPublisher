@@ -145,8 +145,12 @@ public class WebSocketPublisher: NSObject {
         task.receiveOnce()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] result in
-                guard case .finished = result else { return }
-                self?.startListening()
+                switch result {
+                case .finished:
+                    self?.startListening()
+                case .failure(let err):
+                    self?._subject.send(.disconnected(.abnormalClosure, err.localizedDescription))
+                }
             }, receiveValue: { [weak self] message in
                 switch message {
                 case .data(let d):
