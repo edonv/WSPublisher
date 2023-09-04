@@ -8,10 +8,6 @@
 import Foundation
 import Combine
 
-// TODO: Need to allow it to work without an internet connection if it's the same device.
-
-//https://obscuredpixels.com/awaiting-websockets-in-swiftui#
-
 /// Wraps around a subscribable [Publisher](https://developer.apple.com/documentation/combine/publisher)
 /// for connection over WebSocket.
 public class WebSocketPublisher: NSObject {
