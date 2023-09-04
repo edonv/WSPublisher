@@ -85,7 +85,7 @@ public class WebSocketPublisher: NSObject {
     /// Confirms that there is an active connection, unwrapping ``WebSocketPublisher/webSocketTask``.
     /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection.
     /// - Returns: An unwrapped ``WebSocketPublisher/webSocketTask``.
-    private func confirmConnection() throws -> URLSessionWebSocketTask {
+    internal func confirmConnection() throws -> URLSessionWebSocketTask {
         guard let task = webSocketTask else { throw WSErrors.noActiveConnection }
         return task
     }
