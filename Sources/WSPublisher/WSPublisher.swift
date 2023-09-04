@@ -315,23 +315,6 @@ extension URLSessionWebSocketTask {
 // MARK: - URLSessionWebSocketTask Async/Await
 
 extension URLSessionWebSocketTask {
-    /// Wraps [URLSessionWebSocketTask.send(_:completionHandler:)](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/3281790-send)
-    /// in an async function.
-    /// - Parameter message: The [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/Message) to send.
-    /// - Throws: Fails if an error occurs while sending.
-    /// - Returns: `Void`, signalling the message has been sent.
-    public func send(_ message: Message) async throws {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            self.send(message) { error in
-                if let err = error {
-                    continuation.resume(throwing: err)
-                } else {
-                    continuation.resume(returning: ())
-                }
-            }
-        }
-    }
-    
     /// Wraps [URLSessionWebSocketTask.sendPing(pongReceiveHandler:)](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/3181206-sendping)
     /// in an async function.
     /// - Throws: Fails if an error occurs while sending ping.
@@ -345,16 +328,6 @@ extension URLSessionWebSocketTask {
                     continuation.resume(returning: ())
                 }
             }
-        }
-    }
-    
-    /// Wraps [URLSessionWebSocketTask.receive(completionHandler:)](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/3281789-receive)
-    /// in an async function.
-    /// - Throws: Fails if an error occurs while waiting to receive the next message.
-    /// - Returns: A received [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/Message).
-    public func receiveOnce() async throws -> URLSessionWebSocketTask.Message {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.receive(completionHandler: continuation.resume(with:))
         }
     }
 }
