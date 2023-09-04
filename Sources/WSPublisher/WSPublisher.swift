@@ -24,7 +24,7 @@ public class WebSocketPublisher: NSObject {
     private var observers = Set<AnyCancellable>()
     
     /// The (Subject)[https://developer.apple.com/documentation/combine/subject] that publishes all received ``WebSocketPublisher/WSEvent``s.
-    private let _subject = CurrentValueSubject<WSEvent, Error>(.publisherCreated)
+    internal let _subject = CurrentValueSubject<WSEvent, Error>(.publisherCreated)
     
     /// Returns the internal [Publisher](https://developer.apple.com/documentation/combine/publisher) (really a
     /// [CurrentValueSubject](https://developer.apple.com/documentation/combine/currentvaluesubject)) as an
@@ -76,7 +76,7 @@ public class WebSocketPublisher: NSObject {
     }
     
     /// Cleans up properties after closing a connection.
-    private func clearTaskData() {
+    internal func clearTaskData() {
         webSocketTask = nil
         urlRequest = nil
         observers.forEach { $0.cancel() }
@@ -139,7 +139,7 @@ public class WebSocketPublisher: NSObject {
     /// Starts the recursive listening loop.
     ///
     /// Due to [URLSessionWebSocketTask](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask) stopping its listening after receiving a single message, the listening loop recursively calls itself upon successfully completing. If it completes with a failure, it doesn't call itself again.
-    private func startListening() {
+    internal func startListening() {
         guard let task = webSocketTask else { return }
         
         task.receiveOnce()
