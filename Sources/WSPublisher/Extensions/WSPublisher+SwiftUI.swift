@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 extension View {
-    /// Adds an action to perform when this view detects an ``WebSocketPublisher/WSEvent`` emitted by the given ``WebSocketPublisher``.
+    /// Adds an action to perform when this view detects an ``WebSocketPublisher/Event`` emitted by the given ``WebSocketPublisher``.
     /// - Parameters:
     ///   - manager: The ``WebSocketPublisher`` to listen to (``WebSocketPublisher/publisher``).
     ///   - action: The action to perform when an event is emitted by `manager`. The event emitted by `manager` is passed as a parameter to `action`.
@@ -36,10 +36,10 @@ extension View {
         )
     }
     
-    /// Adds an action to perform when this view detects an ``WebSocketPublisher/WSEvent/disconnected(_:_:)`` event emitted by the given ``WebSocketPublisher``.
+    /// Adds an action to perform when this view detects an ``WebSocketPublisher/Event/disconnected(_:_:)`` event emitted by the given ``WebSocketPublisher``.
     /// - Parameters:
     ///   - manager: The ``WebSocketPublisher`` to listen to (``WebSocketPublisher/publisher``).
-    ///   - action: The action to perform when a ``WebSocketPublisher/WSEvent/disconnected(_:_:)`` event is emitted by `manager`. The event's properties are passed as a parameter to `action`.
+    ///   - action: The action to perform when a ``WebSocketPublisher/Event/disconnected(_:_:)`` event is emitted by `manager`. The event's properties are passed as a parameter to `action`.
     /// - Returns: A view that triggers `action` when `manager` emits an event.
     public func onWebSocketDisconnect(
         _ manager: WebSocketPublisher,
@@ -55,10 +55,10 @@ extension View {
         )
     }
     
-    /// Adds an action to perform when this view detects an ``WebSocketPublisher/WSEvent/data(_:)`` event emitted by the given ``WebSocketPublisher``.
+    /// Adds an action to perform when this view detects an ``WebSocketPublisher/Event/data(_:)`` event emitted by the given ``WebSocketPublisher``.
     /// - Parameters:
     ///   - manager: The ``WebSocketPublisher`` to listen to (``WebSocketPublisher/publisher``).
-    ///   - action: The action to perform when a ``WebSocketPublisher/WSEvent/data(_:)`` event is emitted by `manager`. The event's properties are passed as a parameter to `action`.
+    ///   - action: The action to perform when a ``WebSocketPublisher/Event/data(_:)`` event is emitted by `manager`. The event's properties are passed as a parameter to `action`.
     /// - Returns: A view that triggers `action` when `manager` emits an event.
     public func onWebSocketData(
         _ manager: WebSocketPublisher,
@@ -74,10 +74,10 @@ extension View {
         )
     }
     
-    /// Adds an action to perform when this view detects an ``WebSocketPublisher/WSEvent/string(_:)`` event emitted by the given ``WebSocketPublisher``.
+    /// Adds an action to perform when this view detects an ``WebSocketPublisher/Event/string(_:)`` event emitted by the given ``WebSocketPublisher``.
     /// - Parameters:
     ///   - manager: The ``WebSocketPublisher`` to listen to (``WebSocketPublisher/publisher``).
-    ///   - action: The action to perform when a ``WebSocketPublisher/WSEvent/string(_:)`` event is emitted by `manager`. The event's properties are passed as a parameter to `action`.
+    ///   - action: The action to perform when a ``WebSocketPublisher/Event/string(_:)`` event is emitted by `manager`. The event's properties are passed as a parameter to `action`.
     /// - Returns: A view that triggers `action` when `manager` emits an event.
     public func onWebSocketString(
         _ manager: WebSocketPublisher,

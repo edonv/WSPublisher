@@ -21,7 +21,7 @@ public class WebSocketPublisher: NSObject {
     /// Used for storing active `Combine` [Cancellable](https://developer.apple.com/documentation/combine/cancellable)s.
     private var observers = Set<AnyCancellable>()
     
-    /// The (Subject)[https://developer.apple.com/documentation/combine/subject] that publishes all received ``WebSocketPublisher/WSEvent``s.
+    /// The (Subject)[https://developer.apple.com/documentation/combine/subject] that publishes all received ``WebSocketPublisher/Event``s.
     internal let _subject = CurrentValueSubject<Event, Never>(.publisherCreated)
     
     /// Returns the internal [Publisher](https://developer.apple.com/documentation/combine/publisher) (really a
