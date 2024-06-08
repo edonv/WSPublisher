@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// A non-namespaced shorthand for `WebSocketPublisher.Event`.
+/// A non-namespaced shorthand for ``WebSocketPublisher/Event``.
 public typealias WSEvent = WebSocketPublisher.Event
 
 extension WebSocketPublisher {
