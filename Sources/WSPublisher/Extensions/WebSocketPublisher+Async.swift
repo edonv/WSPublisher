@@ -14,7 +14,7 @@ extension WebSocketPublisher {
     /// the connected WebSocket server/host.
     ///
     /// - Parameter message: The [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/message) to send.
-    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection, or can fail if an
+    /// - Throws: ``WebSocketPublisher/Errors/noActiveConnection`` if there isn't an active connection, or can fail if an
     /// error occurs while sending.
     /// - Returns: `Void`, signalling the message has been sent.
     private func send(_ message: URLSessionWebSocketTask.Message) async throws {
@@ -24,7 +24,7 @@ extension WebSocketPublisher {
     
     /// Sends a `String` message to the connected WebSocket server/host.
     /// - Parameter message: The `String` message to send.
-    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection, or can fail if an
+    /// - Throws: ``WebSocketPublisher/Errors/noActiveConnection`` if there isn't an active connection, or can fail if an
     /// error occurs while sending.
     /// - Returns: `Void`, signalling the message has been sent.
     public func send(_ message: String) async throws {
@@ -33,7 +33,7 @@ extension WebSocketPublisher {
     
     /// Sends a `Data` message to the connected WebSocket server/host.
     /// - Parameter message: The `Data` message to send.
-    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection, or can fail if an
+    /// - Throws: ``WebSocketPublisher/Errors/noActiveConnection`` if there isn't an active connection, or can fail if an
     /// error occurs while sending.
     /// - Returns: `Void`, signalling the message has been sent.
     public func send(_ message: Data) async throws {
@@ -41,7 +41,7 @@ extension WebSocketPublisher {
     }
     
     /// Sends a ping to the connected WebSocket server/host.
-    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection, or can fail if an
+    /// - Throws: ``WebSocketPublisher/Errors/noActiveConnection`` if there isn't an active connection, or can fail if an
     /// error occurs while sending.
     /// - Returns: `Void`, signalling the ping has been sent.
     public func ping() async throws {

@@ -9,7 +9,7 @@ import Foundation
 
 extension WebSocketPublisher {
     /// Errors pertaining to ``WebSocketPublisher``.
-    public enum WSErrors: Error {
+    public enum Errors: Error {
         /// Thrown when there is no active connection.
         case noActiveConnection
     }

@@ -81,10 +81,10 @@ public class WebSocketPublisher: NSObject {
     }
     
     /// Confirms that there is an active connection, unwrapping ``WebSocketPublisher/webSocketTask``.
-    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection.
+    /// - Throws: ``WebSocketPublisher/Errors/noActiveConnection`` if there isn't an active connection.
     /// - Returns: An unwrapped ``WebSocketPublisher/webSocketTask``.
     internal func confirmConnection() throws -> URLSessionWebSocketTask {
-        guard let task = webSocketTask else { throw WSErrors.noActiveConnection }
+        guard let task = webSocketTask else { throw Errors.noActiveConnection }
         return task
     }
     
@@ -104,7 +104,7 @@ public class WebSocketPublisher: NSObject {
     /// [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/message) to
     /// the connected WebSocket server/host.
     /// - Parameter message: The [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/message) to send.
-    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection.
+    /// - Throws: ``WebSocketPublisher/Errors/noActiveConnection`` if there isn't an active connection.
     /// - Returns: A [Publisher](https://developer.apple.com/documentation/combine/publisher) without any value, signalling the
     /// message has been sent.
     private func send(_ message: URLSessionWebSocketTask.Message) throws -> AnyPublisher<Void, Error> {
@@ -121,7 +121,7 @@ public class WebSocketPublisher: NSObject {
     
     /// Sends a `String` message to the connected WebSocket server/host.
     /// - Parameter message: The `String` message to send.
-    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection.
+    /// - Throws: ``WebSocketPublisher/Errors/noActiveConnection`` if there isn't an active connection.
     /// - Returns: A [Publisher](https://developer.apple.com/documentation/combine/publisher) without any value, signalling the
     /// message has been sent.
     public func send(_ message: String) throws -> AnyPublisher<Void, Error> {
@@ -130,7 +130,7 @@ public class WebSocketPublisher: NSObject {
     
     /// Sends a `Data` message to the connected WebSocket server/host.
     /// - Parameter message: The `Data` message to send.
-    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection.
+    /// - Throws: ``WebSocketPublisher/Errors/noActiveConnection`` if there isn't an active connection.
     /// - Returns: A [Publisher](https://developer.apple.com/documentation/combine/publisher) without any value, signalling the
     /// message has been sent.
     public func send(_ message: Data) throws -> AnyPublisher<Void, Error> {
@@ -138,7 +138,7 @@ public class WebSocketPublisher: NSObject {
     }
     
     /// Sends a ping to the connected WebSocket server/host.
-    /// - Throws: ``WebSocketPublisher/WSErrors/noActiveConnection`` if there isn't an active connection.
+    /// - Throws: ``WebSocketPublisher/Errors/noActiveConnection`` if there isn't an active connection.
     /// - Returns: A [Publisher](https://developer.apple.com/documentation/combine/publisher) without any value, signalling the
     /// ping has been sent.
     public func ping() throws -> AnyPublisher<Void, Error> {
