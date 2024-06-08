@@ -7,7 +7,13 @@
 
 import Foundation
 
+/// A non-namespaced shorthand for `WebSocketPublisher.Event`.
+public typealias WSEvent = WebSocketPublisher.Event
+
 extension WebSocketPublisher {
+    @available(*, deprecated, renamed: "Event", message: "WSEvent has been renamed to `Event` for the sake of brevity.")
+    public typealias WSEvent = Event
+    
     /// Events that are published via ``WebSocketPublisher/publisher``.
     public enum Event {
         /// Occurs when ``WebSocketPublisher/publisher`` is initially created.
