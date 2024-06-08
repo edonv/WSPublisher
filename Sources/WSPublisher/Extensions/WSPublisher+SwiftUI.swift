@@ -16,7 +16,7 @@ extension View {
     /// - Returns: A view that triggers `action` when `manager` emits an event.
     public func onWebSocketEvent(
         _ manager: WebSocketPublisher,
-        perform action: @escaping (WebSocketPublisher.WSEvent) -> Void
+        perform action: @escaping (WebSocketPublisher.Event) -> Void
     ) -> some View {
         self.onReceive(manager.publisher, perform: action)
     }

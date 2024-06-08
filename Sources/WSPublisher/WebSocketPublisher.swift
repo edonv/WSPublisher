@@ -22,7 +22,7 @@ public class WebSocketPublisher: NSObject {
     private var observers = Set<AnyCancellable>()
     
     /// The (Subject)[https://developer.apple.com/documentation/combine/subject] that publishes all received ``WebSocketPublisher/WSEvent``s.
-    internal let _subject = CurrentValueSubject<WSEvent, Never>(.publisherCreated)
+    internal let _subject = CurrentValueSubject<Event, Never>(.publisherCreated)
     
     /// Returns the internal [Publisher](https://developer.apple.com/documentation/combine/publisher) (really a
     /// [CurrentValueSubject](https://developer.apple.com/documentation/combine/currentvaluesubject)) as an
@@ -30,7 +30,7 @@ public class WebSocketPublisher: NSObject {
     /// 
     /// Maintains clear and consistent terminology, and removes the possibility of developers sending
     /// values to the subject.
-    public var publisher: AnyPublisher<WSEvent, Never> {
+    public var publisher: AnyPublisher<Event, Never> {
         _subject.eraseToAnyPublisher()
     }
     

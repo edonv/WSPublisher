@@ -1,6 +1,6 @@
 //
-//  WSEvent.swift
-//  
+//  WebSocketPublisher+Event.swift
+//
 //
 //  Created by Edon Valdman on 9/4/23.
 //
@@ -9,7 +9,7 @@ import Foundation
 
 extension WebSocketPublisher {
     /// Events that are published via ``WebSocketPublisher/publisher``.
-    public enum WSEvent {
+    public enum Event {
         /// Occurs when ``WebSocketPublisher/publisher`` is initially created.
         case publisherCreated
         

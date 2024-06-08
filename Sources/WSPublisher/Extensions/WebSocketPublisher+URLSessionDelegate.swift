@@ -12,7 +12,7 @@ extension WebSocketPublisher: URLSessionWebSocketDelegate {
     /// This function is called automatically by the delegate system when the WebSocket connection
     /// opens successfully.
     public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
-        let event = WSEvent.connected(`protocol`)
+        let event = Event.connected(`protocol`)
         _subject.send(event)
         startListening()
     }
@@ -23,7 +23,7 @@ extension WebSocketPublisher: URLSessionWebSocketDelegate {
         clearTaskData()
         
         let reasonStr = reason != nil ? String(data: reason!, encoding: .utf8) : nil
-        let event = WSEvent.disconnected(closeCode, reasonStr)
+        let event = Event.disconnected(closeCode, reasonStr)
         _subject.send(event)
     }
 }
