@@ -88,6 +88,20 @@ public class WebSocketPublisher: NSObject {
         return task
     }
     
+    /// Confirms that there is an active connection, unwrapping ``WebSocketPublisher/webSocketTask``.
+    /// - Throws: ``WebSocketPublisher/Errors/noActiveConnection`` if there isn't an active connection.
+    /// - Returns: An unwrapped ``WebSocketPublisher/webSocketTask``.
+    internal func wsTaskPublisher() -> AnyPublisher<URLSessionWebSocketTask, Error> {
+        do {
+            return Just(try confirmConnection())
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        } catch {
+            return Fail(error: Errors.noActiveConnection)
+                .eraseToAnyPublisher()
+        }
+    }
+    
 //    private var messageBuffer = [URLSessionWebSocketTask.Message]() {
 //        didSet {
 //            guard let messageToSend = messageBuffer.first else { return }
@@ -107,15 +121,17 @@ public class WebSocketPublisher: NSObject {
     /// - Throws: ``WebSocketPublisher/Errors/noActiveConnection`` if there isn't an active connection.
     /// - Returns: A [Publisher](https://developer.apple.com/documentation/combine/publisher) without any value, signalling the
     /// message has been sent.
-    private func send(_ message: URLSessionWebSocketTask.Message) throws -> AnyPublisher<Void, Error> {
-        let task = try confirmConnection()
-        
+    private func send(_ message: URLSessionWebSocketTask.Message) -> AnyPublisher<Void, Error> {
 //        buffer(message: message)
 //        Publishers.Debounce(upstream: <#T##_#>, dueTime: <#T##_.SchedulerTimeType.Stride#>, scheduler: <#T##_#>, options: <#T##_.SchedulerOptions?#>)
-        return Publishers.Delay(upstream: task.send(message),
-                                interval: .seconds(1),
-                                tolerance: .seconds(0.5),
-                                scheduler: DispatchQueue.main)
+
+        return wsTaskPublisher()
+            .flatMap { $0.send(message) }
+            .delay(
+               for: .seconds(1),
+               tolerance: .seconds(0.5),
+               scheduler: DispatchQueue.main
+            )
             .eraseToAnyPublisher()
     }
     
@@ -124,8 +140,8 @@ public class WebSocketPublisher: NSObject {
     /// - Throws: ``WebSocketPublisher/Errors/noActiveConnection`` if there isn't an active connection.
     /// - Returns: A [Publisher](https://developer.apple.com/documentation/combine/publisher) without any value, signalling the
     /// message has been sent.
-    public func send(_ message: String) throws -> AnyPublisher<Void, Error> {
-        return try send(.string(message))
+    public func send(_ message: String) -> AnyPublisher<Void, Error> {
+        return send(.string(message))
     }
     
     /// Sends a `Data` message to the connected WebSocket server/host.
@@ -133,18 +149,17 @@ public class WebSocketPublisher: NSObject {
     /// - Throws: ``WebSocketPublisher/Errors/noActiveConnection`` if there isn't an active connection.
     /// - Returns: A [Publisher](https://developer.apple.com/documentation/combine/publisher) without any value, signalling the
     /// message has been sent.
-    public func send(_ message: Data) throws -> AnyPublisher<Void, Error> {
-        return try send(.data(message))
+    public func send(_ message: Data) -> AnyPublisher<Void, Error> {
+        return send(.data(message))
     }
     
     /// Sends a ping to the connected WebSocket server/host.
     /// - Throws: ``WebSocketPublisher/Errors/noActiveConnection`` if there isn't an active connection.
     /// - Returns: A [Publisher](https://developer.apple.com/documentation/combine/publisher) without any value, signalling the
     /// ping has been sent.
-    public func ping() throws -> AnyPublisher<Void, Error> {
-        let task = try confirmConnection()
-        
-        return task.sendPing()
+    public func ping() -> AnyPublisher<Void, Error> {
+        return wsTaskPublisher()
+            .flatMap { $0.sendPing() }
             .eraseToAnyPublisher()
     }
     
