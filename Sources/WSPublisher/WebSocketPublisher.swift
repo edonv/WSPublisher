@@ -8,6 +8,9 @@
 import Foundation
 import Combine
 
+import HTTPTypes
+import HTTPTypesFoundation
+
 /// Wraps around a subscribable [Publisher](https://developer.apple.com/documentation/combine/publisher)
 /// for connection over WebSocket.
 public class WebSocketPublisher: NSObject {
@@ -47,9 +50,14 @@ public class WebSocketPublisher: NSObject {
     
     /// Creates and starts a WebSocket connection.
     /// - Parameter request: The connection data to connect to.
-    public func connect(with request: URLRequest) {
+    public func connect(with request: URLRequest, headers: HTTPFields? = nil) {
+        var req = request.httpRequest!
+        if let headers {
+            req.headerFields = headers
+        }
+        
         let session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
-        webSocketTask = session.webSocketTask(with: request)
+        webSocketTask = session.webSocketTask(with: URLRequest(httpRequest: req)!)
         
         webSocketTask?.resume()
         self.urlRequest = request
@@ -57,8 +65,8 @@ public class WebSocketPublisher: NSObject {
     
     /// Creates and starts a WebSocket connection.
     /// - Parameter url: The `URL` to connect to.
-    public func connect(with url: URL) {
-        connect(with: URLRequest(url: url))
+    public func connect(with url: URL, headers: HTTPFields? = nil) {
+        connect(with: URLRequest(url: url), headers: headers)
     }
     
     /// Disconnects from ``WebSocketPublisher/webSocketTask``, if there is an active connection.
