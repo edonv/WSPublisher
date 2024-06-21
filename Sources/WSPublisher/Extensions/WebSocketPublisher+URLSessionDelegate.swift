@@ -23,7 +23,6 @@ extension WebSocketPublisher: URLSessionWebSocketDelegate {
         defer { clearTaskData() }
         
         let reasonStr = reason != nil ? String(data: reason!, encoding: .utf8) : nil
-        let event = Event.disconnected(closeCode, reasonStr)
-        _subject.send(event)
+        _subject.send(.disconnected(closeCode, reasonStr))
     }
 }
