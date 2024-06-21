@@ -24,7 +24,7 @@ extension WebSocketPublisher {
         /// Occurs when the connection is opened successfully.
         case connected(_ protocol: String?, upgradeHeaders: HTTPFields)
         
-        /// Occurs when the connection is closed.
+        /// Occurs when the connection is closed, or it fails to connect.
         case disconnected(Disconnect)
         
         /// Occurs when ``WebSocketPublisher/webSocketTask`` receives a `Data` message.
