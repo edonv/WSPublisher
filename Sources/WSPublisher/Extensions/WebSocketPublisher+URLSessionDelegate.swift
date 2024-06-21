@@ -15,8 +15,7 @@ extension WebSocketPublisher: URLSessionWebSocketDelegate {
     /// opens successfully.
     public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
         let headers = webSocketTask.httpResponse?.headerFields ?? [:]
-        let event = Event.connected(`protocol`, upgradeHeaders: headers)
-        _subject.send(event)
+        _subject.send(.connected(`protocol`, upgradeHeaders: headers))
         startListening()
     }
     
