@@ -103,7 +103,8 @@ extension WebSocketPublisher.Event: CustomStringConvertible {
             let detail: String
             switch disconnect {
             case .closeCode(let code, let reason):
-                detail = "code: \(code), reason: \(reason ?? "nil")"
+                let reasonStr = reason.map { "\"\($0)\""} ?? "nil"
+                detail = "code: \(code), reason: \(reasonStr)"
             case .urlError(let urlError):
                 detail = "error: \(urlError)"
             case .unknownError(let error):
