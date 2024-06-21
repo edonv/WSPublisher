@@ -22,7 +22,7 @@ extension WebSocketPublisher {
         case publisherCreated
         
         /// Occurs when the connection is opened successfully.
-        case connected(_ protocol: String?, upgradeHeaders: HTTPFields)
+        case connected(Connect)
         
         /// Occurs when the connection is closed, or it fails to connect.
         case disconnected(Disconnect)
@@ -41,6 +41,26 @@ extension WebSocketPublisher {
 }
 
 extension WebSocketPublisher.Event {
+    // MARK: - .connected
+    
+    public struct Connect: Sendable {
+        public let `protocol`: String?
+        public let response: HTTPResponse
+        
+        public var headers: HTTPFields {
+            response.headerFields
+        }
+        
+        internal init(_ protocol: String?, response: HTTPResponse) {
+            self.protocol = `protocol`
+            self.response = response
+        }
+    }
+    
+    public static func connected(_ protocol: String?, response: HTTPResponse) -> WebSocketPublisher.Event {
+        .connected(Connect(`protocol`, response: response))
+    }
+    
     // MARK: - .disconnected
     
     public enum Disconnect: Sendable {
@@ -89,13 +109,13 @@ extension WebSocketPublisher.Event: CustomStringConvertible {
         switch self {
         case .publisherCreated:
             return "publisherCreated"
-        case .connected(let p, let upgradeHeaders):
+        case .connected(let connect):
             var strs = [String]()
-            if let p {
-                strs.append("protocol: \(p)")
+            if let p = connect.protocol {
+                strs.append("protocol: \"\(p)\"")
             }
-            if !upgradeHeaders.isEmpty {
-                strs.append("headers: [\(upgradeHeaders.map(\.description).joined(separator: ", "))]")
+            if !connect.headers.isEmpty {
+                strs.append("headers: [\(connect.headers.map(\.description).joined(separator: ", "))]")
             }
             let suffix = strs.isEmpty ? "" : "(" + strs
                 .joined(separator: ", ") + ")"

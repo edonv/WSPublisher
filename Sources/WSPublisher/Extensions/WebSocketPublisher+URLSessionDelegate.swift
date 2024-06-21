@@ -15,8 +15,7 @@ extension WebSocketPublisher: URLSessionWebSocketDelegate {
     /// This function is called automatically by the delegate system when the WebSocket connection
     /// opens successfully.
     public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
-        let headers = webSocketTask.httpResponse?.headerFields ?? [:]
-        _subject.send(.connected(`protocol`, upgradeHeaders: headers))
+        _subject.send(.connected(`protocol`, response: webSocketTask.httpResponse ?? .init(status: .switchingProtocols)))
         startListening()
     }
     

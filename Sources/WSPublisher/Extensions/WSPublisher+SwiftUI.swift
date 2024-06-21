@@ -24,14 +24,13 @@ extension View {
     
     public func onWebSocketConnect(
         _ manager: WebSocketPublisher,
-        perform action: @escaping (_ protocol: String?, _ headers: HTTPFields) -> Void
+        perform action: @escaping (_ connect: WebSocketPublisher.Event.Connect) -> Void
     ) -> some View {
         self.onReceive(
             manager.publisher
-                // Explicitly noted as String?? so it doesn't fully-unwrap the parameter
-                .compactMap { event -> (String?, HTTPFields)? in
-                    guard case .connected(let p, let headers) = event else { return nil }
-                    return (p, headers)
+                .compactMap { event in
+                    guard case .connected(let connect) = event else { return nil }
+                    return connect
                 },
             perform: action
         )
