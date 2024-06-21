@@ -180,8 +180,7 @@ public class WebSocketPublisher: NSObject {
                 switch result {
                 case .finished:
                     self?.startListening()
-                case .failure(let err):
-                    self?._subject.send(.disconnected(.abnormalClosure, err.localizedDescription))
+                case .failure:
                     self?.clearTaskData()
                 }
             }, receiveValue: { [weak self] message in
