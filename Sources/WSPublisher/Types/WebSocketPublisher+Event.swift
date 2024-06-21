@@ -17,7 +17,7 @@ extension WebSocketPublisher {
     public typealias WSEvent = Event
     
     /// Events that are published via ``WebSocketPublisher/publisher``.
-    public enum Event {
+    public enum Event: Hashable, Sendable {
         /// Occurs when ``WebSocketPublisher/publisher`` is initially created.
         case publisherCreated
         
@@ -43,7 +43,7 @@ extension WebSocketPublisher {
 extension WebSocketPublisher.Event {
     // MARK: - .connected
     
-    public struct Connect: Sendable {
+    public struct Connect: Sendable, Hashable {
         public let `protocol`: String?
         public let response: HTTPResponse
         
@@ -63,7 +63,7 @@ extension WebSocketPublisher.Event {
     
     // MARK: - .disconnected
     
-    public enum Disconnect: Sendable {
+    public enum Disconnect: Sendable, Hashable {
         /// The connection closes safely with a close code, and optionally with a descriptive reason.
         case closeCode(_ closeCode: URLSessionWebSocketTask.CloseCode, _ reason: String?)
         
@@ -78,7 +78,7 @@ extension WebSocketPublisher.Event {
         case urlError(URLError)
         
         /// Some other type of `Error` occurs that isn't a `URLError`.
-        case unknownError(Error)
+        case unknownError(NSError)
     }
     
     /// Occurs when the connection is closed.
@@ -100,7 +100,7 @@ extension WebSocketPublisher.Event {
     
     /// Occurs when the connection is closed.
     public static func disconnected(_ error: Error) -> WebSocketPublisher.Event {
-        .disconnected(.unknownError(error))
+        .disconnected(.unknownError(error as NSError))
     }
 }
 
