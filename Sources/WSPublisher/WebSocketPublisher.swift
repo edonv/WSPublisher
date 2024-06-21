@@ -59,7 +59,7 @@ public class WebSocketPublisher: NSObject {
     public func connect(with request: URLRequest, headers: HTTPFields? = nil) {
         var req = request.httpRequest!
         if let headers {
-            req.headerFields = headers
+            req.headerFields.append(contentsOf: headers)
         }
         
         let session = URLSession(configuration: .default, delegate: self, delegateQueue: _operationQueue)
