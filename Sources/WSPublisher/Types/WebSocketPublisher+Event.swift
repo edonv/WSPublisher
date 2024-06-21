@@ -81,3 +81,42 @@ extension WebSocketPublisher.Event {
         case unknownError(Error)
     }
 }
+
+extension WebSocketPublisher.Event: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .publisherCreated:
+            return "publisherCreated"
+        case .connected(let p, let upgradeHeaders):
+            var strs = [String]()
+            if let p {
+                strs.append("protocol: \(p)")
+            }
+            if !upgradeHeaders.isEmpty {
+                strs.append("headers: [\(upgradeHeaders.map(\.description).joined(separator: ", "))]")
+            }
+            let suffix = strs.isEmpty ? "" : "(" + strs
+                .joined(separator: ", ") + ")"
+            return "connected" + suffix
+        
+        case .disconnected(let disconnect):
+            let detail: String
+            switch disconnect {
+            case .closeCode(let code, let reason):
+                detail = "code: \(code), reason: \(reason ?? "nil")"
+            case .urlError(let urlError):
+                detail = "error: \(urlError)"
+            case .unknownError(let error):
+                detail = "error: \(error)"
+            }
+            
+            return "disconnected(\(detail))"
+        case .data(let data):
+            return "data(\(data))"
+        case .string(let string):
+            return "string(\"\(string)\")"
+        case .generic(let message):
+            return "generic(\(message))"
+        }
+    }
+}
