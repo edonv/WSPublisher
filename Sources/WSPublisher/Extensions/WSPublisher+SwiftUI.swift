@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import HTTPTypes
 
 extension View {
     /// Adds an action to perform when this view detects an ``WebSocketPublisher/Event`` emitted by the given ``WebSocketPublisher``.
