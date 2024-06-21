@@ -34,7 +34,7 @@ extension WebSocketPublisher {
         case string(String)
         
         /// This is used as a fallback, due to
-        /// [URLSessionWebSocketTask.Message](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/message)
+        /// [`URLSessionWebSocketTask.Message`](https://developer.apple.com/documentation/foundation/urlsessionwebsockettask/message)
         /// being made with the possibility of new cases.
         case generic(URLSessionWebSocketTask.Message)
     }
