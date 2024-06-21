@@ -11,7 +11,7 @@ import Combine
 import HTTPTypes
 import HTTPTypesFoundation
 
-/// Wraps around a subscribable [Publisher](https://developer.apple.com/documentation/combine/publisher)
+/// Wraps around a subscribable [`Publisher`](https://developer.apple.com/documentation/combine/publisher)
 /// for connection over WebSocket.
 public class WebSocketPublisher: NSObject {
     /// The `URLRequest` used for creating an `URLSession` to start a connection.
@@ -21,10 +21,10 @@ public class WebSocketPublisher: NSObject {
     /// containing the active connection, when there is one.
     public private(set) var webSocketTask: URLSessionWebSocketTask? = nil
     
-    /// Used for storing active `Combine` [Cancellable](https://developer.apple.com/documentation/combine/cancellable)s.
+    /// Used for storing active `Combine` [`Cancellable`](https://developer.apple.com/documentation/combine/cancellable)s.
     private var observers = Set<AnyCancellable>()
     
-    /// The [Subject](https://developer.apple.com/documentation/combine/subject) that publishes all received ``WebSocketPublisher/Event``s.
+    /// The [`Subject`](https://developer.apple.com/documentation/combine/subject) that publishes all received ``WebSocketPublisher/Event``s.
     internal let _subject = CurrentValueSubject<Event, Never>(.publisherCreated)
     
     /// Returns the internal [Publisher](https://developer.apple.com/documentation/combine/publisher) (really a
