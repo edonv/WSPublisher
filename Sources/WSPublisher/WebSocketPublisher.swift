@@ -41,6 +41,13 @@ public class WebSocketPublisher: NSObject {
         }
     }
     
+    private let _operationQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "WebSocketPublisher.queue"
+        queue.qualityOfService = .userInitiated
+        return queue
+    }()
+    
     public override init() {
         super.init()
     }
@@ -53,7 +60,7 @@ public class WebSocketPublisher: NSObject {
             req.headerFields = headers
         }
         
-        let session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
+        let session = URLSession(configuration: .default, delegate: self, delegateQueue: _operationQueue)
         webSocketTask = session.webSocketTask(with: URLRequest(httpRequest: req)!)
         
         webSocketTask?.resume()
@@ -175,7 +182,7 @@ public class WebSocketPublisher: NSObject {
         guard let task = webSocketTask else { return }
         
         task.receiveOnce()
-            .receive(on: DispatchQueue.main)
+            .receive(on: _operationQueue)
             .sink { [weak self] result in
                 switch result {
                 case .finished:
