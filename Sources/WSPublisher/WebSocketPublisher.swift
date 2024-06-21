@@ -53,7 +53,9 @@ public class WebSocketPublisher: NSObject {
     }
     
     /// Creates and starts a WebSocket connection.
-    /// - Parameter request: The connection data to connect to.
+    /// - Parameters:
+    ///   - request: The connection data to connect to.
+    ///   - headers: Optional additional headers to include in the initial connection request.
     public func connect(with request: URLRequest, headers: HTTPFields? = nil) {
         var req = request.httpRequest!
         if let headers {
@@ -68,7 +70,9 @@ public class WebSocketPublisher: NSObject {
     }
     
     /// Creates and starts a WebSocket connection.
-    /// - Parameter url: The `URL` to connect to.
+    /// - Parameters:
+    ///   - url: The `URL` to connect to.
+    ///   - headers: Optional additional headers to include in the initial connection request.
     public func connect(with url: URL, headers: HTTPFields? = nil) {
         connect(with: URLRequest(url: url), headers: headers)
     }
