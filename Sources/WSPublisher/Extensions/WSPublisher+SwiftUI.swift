@@ -44,13 +44,13 @@ extension View {
     /// - Returns: A view that triggers `action` when `manager` emits an event.
     public func onWebSocketDisconnect(
         _ manager: WebSocketPublisher,
-        perform action: @escaping (_ closeCode: URLSessionWebSocketTask.CloseCode, _ reason: String?) -> Void
+        perform action: @escaping (_ disconnect: WebSocketPublisher.Event.Disconnect) -> Void
     ) -> some View {
         self.onReceive(
             manager.publisher
                 .compactMap { event in
-                    guard case .disconnected(let closeCode, let reason) = event else { return nil }
-                    return (closeCode, reason)
+                    guard case .disconnected(let disconnect) = event else { return nil }
+                    return disconnect
                 },
             perform: action
         )
