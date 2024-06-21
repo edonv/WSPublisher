@@ -181,7 +181,7 @@ public class WebSocketPublisher: NSObject {
                 case .finished:
                     self?.startListening()
                 case .failure:
-                    self?.clearTaskData()
+                    break
                 }
             }, receiveValue: { [weak self] message in
                 switch message {
