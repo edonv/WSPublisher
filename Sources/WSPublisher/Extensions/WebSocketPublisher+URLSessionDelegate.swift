@@ -8,11 +8,14 @@
 import Foundation
 import Combine
 
+import HTTPTypesFoundation
+
 extension WebSocketPublisher: URLSessionWebSocketDelegate {
     /// This function is called automatically by the delegate system when the WebSocket connection
     /// opens successfully.
     public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
-        let event = Event.connected(`protocol`)
+        let headers = webSocketTask.httpResponse?.headerFields ?? [:]
+        let event = Event.connected(`protocol`, upgradeHeaders: headers)
         _subject.send(event)
         startListening()
     }

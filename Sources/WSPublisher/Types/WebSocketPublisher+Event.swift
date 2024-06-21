@@ -7,6 +7,8 @@
 
 import Foundation
 
+import HTTPTypes
+
 /// A non-namespaced shorthand for ``WebSocketPublisher/Event``.
 public typealias WSEvent = WebSocketPublisher.Event
 
@@ -20,7 +22,7 @@ extension WebSocketPublisher {
         case publisherCreated
         
         /// Occurs when the connection is opened successfully.
-        case connected(_ protocol: String?)
+        case connected(_ protocol: String?, upgradeHeaders: HTTPFields)
         
         /// Occurs when the connection is closed.
         case disconnected(_ closeCode: URLSessionWebSocketTask.CloseCode, _ reason: String?)
