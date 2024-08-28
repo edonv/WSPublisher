@@ -11,8 +11,7 @@ import Combine
 import HTTPTypes
 import HTTPTypesFoundation
 
-/// Wraps around a subscribable [`Publisher`](https://developer.apple.com/documentation/combine/publisher)
-/// for connection over WebSocket.
+/// Wraps around a subscribable [`Publisher`](https://developer.apple.com/documentation/combine/publisher) for connection over WebSocket.
 public class WebSocketPublisher: NSObject {
     /// The `URLRequest` used for creating an `URLSession` to start a connection.
     public var urlRequest: URLRequest? = nil
