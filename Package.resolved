@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "swift-http-types",
+        "repositoryURL": "https://github.com/apple/swift-http-types.git",
+        "state": {
+          "branch": null,
+          "revision": "1ddbea1ee34354a6a2532c60f98501c35ae8edfa",
+          "version": "1.2.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

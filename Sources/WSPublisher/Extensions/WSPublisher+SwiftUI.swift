@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import HTTPTypes
 
 extension View {
     /// Adds an action to perform when this view detects an ``WebSocketPublisher/Event`` emitted by the given ``WebSocketPublisher``.
@@ -23,14 +24,13 @@ extension View {
     
     public func onWebSocketConnect(
         _ manager: WebSocketPublisher,
-        perform action: @escaping (_ protocol: String?) -> Void
+        perform action: @escaping (_ connect: WebSocketPublisher.Event.Connect) -> Void
     ) -> some View {
         self.onReceive(
             manager.publisher
-                // Explicitly noted as String?? so it doesn't fully-unwrap the parameter
-                .compactMap { event -> String?? in
-                    guard case .connected(let p) = event else { return nil }
-                    return p
+                .compactMap { event in
+                    guard case .connected(let connect) = event else { return nil }
+                    return connect
                 },
             perform: action
         )
@@ -43,13 +43,13 @@ extension View {
     /// - Returns: A view that triggers `action` when `manager` emits an event.
     public func onWebSocketDisconnect(
         _ manager: WebSocketPublisher,
-        perform action: @escaping (_ closeCode: URLSessionWebSocketTask.CloseCode, _ reason: String?) -> Void
+        perform action: @escaping (_ disconnect: WebSocketPublisher.Event.Disconnect) -> Void
     ) -> some View {
         self.onReceive(
             manager.publisher
                 .compactMap { event in
-                    guard case .disconnected(let closeCode, let reason) = event else { return nil }
-                    return (closeCode, reason)
+                    guard case .disconnected(let disconnect) = event else { return nil }
+                    return disconnect
                 },
             perform: action
         )

@@ -8,7 +8,10 @@
 import Foundation
 import Combine
 
-/// Wraps around a subscribable [Publisher](https://developer.apple.com/documentation/combine/publisher)
+import HTTPTypes
+import HTTPTypesFoundation
+
+/// Wraps around a subscribable [`Publisher`](https://developer.apple.com/documentation/combine/publisher)
 /// for connection over WebSocket.
 public class WebSocketPublisher: NSObject {
     /// The `URLRequest` used for creating an `URLSession` to start a connection.
@@ -18,18 +21,15 @@ public class WebSocketPublisher: NSObject {
     /// containing the active connection, when there is one.
     public private(set) var webSocketTask: URLSessionWebSocketTask? = nil
     
-    /// Used for storing active `Combine` [Cancellable](https://developer.apple.com/documentation/combine/cancellable)s.
+    /// Used for storing active `Combine` [`Cancellable`](https://developer.apple.com/documentation/combine/cancellable)s.
     private var observers = Set<AnyCancellable>()
     
-    /// The (Subject)[https://developer.apple.com/documentation/combine/subject] that publishes all received ``WebSocketPublisher/Event``s.
+    /// The [`Subject`](https://developer.apple.com/documentation/combine/subject) that publishes all received ``WebSocketPublisher/Event``s.
     internal let _subject = CurrentValueSubject<Event, Never>(.publisherCreated)
     
-    /// Returns the internal [Publisher](https://developer.apple.com/documentation/combine/publisher) (really a
-    /// [CurrentValueSubject](https://developer.apple.com/documentation/combine/currentvaluesubject)) as an
-    /// [AnyPublisher](https://developer.apple.com/documentation/combine/anypublisher).
-    /// 
-    /// Maintains clear and consistent terminology, and removes the possibility of developers sending
-    /// values to the subject.
+    /// A [`Publisher`](https://developer.apple.com/documentation/combine/publisher) that publishes all received ``WebSocketPublisher/Event``s.
+    ///
+    /// A type-erased [CurrentValueSubject](https://developer.apple.com/documentation/combine/currentvaluesubject), maintaining clear and consistent terminology, and removes the possibility of developers sending values to the subject.
     public var publisher: AnyPublisher<Event, Never> {
         _subject.eraseToAnyPublisher()
     }
@@ -41,24 +41,40 @@ public class WebSocketPublisher: NSObject {
         }
     }
     
+    private let _operationQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "WebSocketPublisher.queue"
+        queue.qualityOfService = .userInitiated
+        return queue
+    }()
+    
     public override init() {
         super.init()
     }
     
     /// Creates and starts a WebSocket connection.
-    /// - Parameter request: The connection data to connect to.
-    public func connect(with request: URLRequest) {
-        let session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
-        webSocketTask = session.webSocketTask(with: request)
+    /// - Parameters:
+    ///   - request: The connection data to connect to.
+    ///   - headers: Optional additional headers to include in the initial connection request.
+    public func connect(with request: URLRequest, headers: HTTPFields? = nil) {
+        var req = request.httpRequest!
+        if let headers {
+            req.headerFields.append(contentsOf: headers)
+        }
+        
+        let session = URLSession(configuration: .default, delegate: self, delegateQueue: _operationQueue)
+        webSocketTask = session.webSocketTask(with: URLRequest(httpRequest: req)!)
         
         webSocketTask?.resume()
         self.urlRequest = request
     }
     
     /// Creates and starts a WebSocket connection.
-    /// - Parameter url: The `URL` to connect to.
-    public func connect(with url: URL) {
-        connect(with: URLRequest(url: url))
+    /// - Parameters:
+    ///   - url: The `URL` to connect to.
+    ///   - headers: Optional additional headers to include in the initial connection request.
+    public func connect(with url: URL, headers: HTTPFields? = nil) {
+        connect(with: URLRequest(url: url), headers: headers)
     }
     
     /// Disconnects from ``WebSocketPublisher/webSocketTask``, if there is an active connection.
@@ -170,16 +186,15 @@ public class WebSocketPublisher: NSObject {
         guard let task = webSocketTask else { return }
         
         task.receiveOnce()
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { [weak self] result in
+            .receive(on: _operationQueue)
+            .sink { [weak self] result in
                 switch result {
                 case .finished:
                     self?.startListening()
-                case .failure(let err):
-                    self?._subject.send(.disconnected(.abnormalClosure, err.localizedDescription))
-                    self?.clearTaskData()
+                case .failure:
+                    break
                 }
-            }, receiveValue: { [weak self] message in
+            } receiveValue: { [weak self] message in
                 switch message {
                 case .data(let d):
                     self?._subject.send(.data(d))
@@ -188,7 +203,7 @@ public class WebSocketPublisher: NSObject {
                 @unknown default:
                     self?._subject.send(.generic(message))
                 }
-            })
+            }
             .store(in: &observers)
     }
 }
